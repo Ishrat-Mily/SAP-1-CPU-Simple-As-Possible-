@@ -36,21 +36,42 @@ This enhanced implementation features a fully functional hardwired control unit,
 ---
 
 <a id="features"></a>
-## Features
+## 3. Key System Features
 
-- **Load Data from Memory:** Supports `LDA` and `LDB` instructions to load values into registers.  
-- **Arithmetic Operations:** Performs addition (`ADD`) and subtraction (`SUB`) between registers.  
-- **Store Results:** Stores the contents of Register A into memory using the `STA` instruction.  
-- **Control Flow:** Jumps to a specific memory address with the `JMP` instruction for loops and branching.  
-- **Program Execution:** Executes instructions sequentially using the Program Counter.  
-- **Instruction Handling:** Fetches, decodes, and executes instructions automatically via the Instruction Register and Control Logic.  
-- **Halt Execution:** Stops program execution with the `HLT` instruction.  
-- **Debugging Support:** Allows step-by-step manual control through dedicated pins in Logisim.  
-- **Memory Access:** Handles up to 16 memory addresses (4-bit address space).  
-- **Data Processing:** Processes 8-bit data values for arithmetic and storage operations.  
-- **ROM Program Storage:** Stores the instruction code in ROM for persistent programs.  
-- **Bootloader / Instruction Loader:** In debug mode, data can be loaded from ROM into RAM through a bootloader mechanism, enabling easy program initialization and testing.  
+1. **Classical SAP-1 foundation (extended):**  
+   Single 8-bit data bus with **4-bit address space (16 bytes)**. Hardwired control (no microcode), preserving a clean didactic design.
 
+2. **Instruction set (extended):**  
+   `LDA, LDB, ADD, SUB, STA, JMP, HLT`. Provides arithmetic and memory-operand support beyond the SAP-1 baseline.
+
+3. **Dual operating modes:**  
+   **Automatic mode:** standard fetch–decode–execute cycle driven by a six-stage ring counter (**T1–T6**).  
+   **Manual/Loader mode:** safe program transfer from ROM or panel input to RAM with loader handshakes and debug support.
+
+4. **Hardwired control unit:**  
+   Combines T-states from the ring counter with opcode decoding. Generates precise control signals for register loading, memory access, ALU operations, program sequencing, and halting.
+
+5. **Strict single-driver bus discipline:**  
+   All bus sources are tri-stated, ensuring only one active driver per T-state to prevent contention.
+
+6. **Datapath architecture:**  
+   Dual 8-bit registers (**Accumulator** and **B-register**) with tri-state outputs. Ripple-carry **ALU** for ADD/SUB operations. 4-bit **Program Counter** with increment and direct load capability. 4-bit **Memory Address Register**, **16×8 SRAM**, and an **8-bit Instruction Register** partitioned for opcode and operand handling.
+
+7. **Opcode decoder:**  
+   **4-to-16 one-hot** decoder generates control signals for each instruction.
+
+8. **Precise timing:**  
+   Memory-operand instructions (**LDA, LDB, STA**) complete in **T5**.  
+   Arithmetic (**ADD, SUB**) and control-flow (**JMP, HLT**) instructions execute in **T4**.
+
+9. **Assembler/compiler support:**  
+   Lightweight **web-based assembler** converts human-readable assembly (`ORG`, `DEC` + mnemonics) into **Logisim v2.0 HEX** format for direct ROM/RAM loading.
+
+10. **Step-through debugging:**  
+    Step through **PC, MAR, IR, A/B registers, ALU output, bus, and SRAM**. Provides clear signal visibility for debugging and educational analysis.
+
+11. **Complete external I/O:**  
+    Output register with 7-segment (or LED) display; optional status indicators for flags (e.g., **Zero/Carry**).
 
 ---
 
