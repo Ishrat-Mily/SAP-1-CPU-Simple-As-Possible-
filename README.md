@@ -1,198 +1,350 @@
-# 🧠 SAP-1 Microprocessor Design using Logisim Evolution
-
-*Course Project – VLSI Design Laboratory*
-
----
-
-## 📘 Abstract
-This project presents the *design and implementation of a Simple-As-Possible (SAP-1) microprocessor* using Logisim Evolution.  
-The SAP-1 architecture demonstrates fundamental concepts of digital design, including *data buses, control sequencing, instruction decoding, and arithmetic logic operations*.  
-To complement the hardware design, a custom *Assembler Application (React-based)* was developed to automatically convert assembly mnemonics into Logisim-compatible hexadecimal machine code.
-
----
-
-## 🧩 Table of Contents
-1. [Introduction](#introduction)  
-2. [Block Diagram of SAP-1](#block-diagram-of-sap-1)  
-3. [Functional Components](#functional-components)  
-   - [Registers](#registers)  
-   - [Program Counter](#program-counter)  
-   - [Memory Unit](#memory-unit)  
-   - [Instruction Register](#instruction-register)  
-   - [Arithmetic Logic Unit (ALU)](#arithmetic-logic-unit-alu)  
-   - [Output Register](#output-register)  
-   - [Control Unit](#control-unit)  
-4. [System Bus and Data Flow](#system-bus-and-data-flow)  
-5. [Timing and Control Sequencing](#timing-and-control-sequencing)  
-6. [Assembler Application](#assembler-application)  
-7. [Simulation and Results](#simulation-and-results)  
-8. [Conclusion](#conclusion)  
-9. [References](#references)
-
----
-
-## 🧠 Introduction
-The *SAP-1 microprocessor* (Simple As Possible – 1) is the simplest functional model of a computer, containing all the essential components needed for instruction execution.  
-It introduces the fundamental operation of fetching, decoding, and executing instructions through a *control sequencer* and a *shared system bus*.
+# SAP-1 CPU (Simple-As-Possible) — Logisim Evolution
 
 <p align="center">
-  <img src="docs/screenshots/introduction_diagram.png" width="500">
+
+  <img src="https://img.shields.io/badge/SAP--1%20CPU-blue?style=for-the-badge&logo=circuit-board&logoColor=white" alt="SAP-1 CPU Badge">
+
+  <img src="https://img.shields.io/badge/Logisim-green?style=for-the-badge&logo=google-circles&logoColor=white" alt="Logisim Badge">
+
 </p>
+
+
+## Table of Contents
+Click on the `Table of Contents` below to directly go the contents
+- [Project Overview](#overview)
+- [Features](#features)
+- [Video Tutorials](#video-tutorials)
+- [Final Circuits](#final-circuits)
+- [Architecture Components](#architecture-components)
+- [Control Unit (Hardwired)](#control-unit)
+- [Instruction Set & Example](#example-program)
+- [Assembler or Compiler](#compiler)
+- [Fetch–Decode–Execute Cycle](#fde)
+- [Run the CPU — Auto Mode](#run-auto)
+- [Run the CPU — Manual Mode](#run-manual)
+- [Future Improvements](#roadmap)
 
 ---
 
-## 🧮 Block Diagram of SAP-1
-The complete architecture of the SAP-1 microprocessor is shown below.  
-It contains the key modules connected via a common bus under the supervision of the control unit.
+<a id="overview"></a>
+## Project Overview
 
-<p align="center">
-  <img src="docs/screenshots/sap1_block_diagram.png" width="700">
-</p>
+This repository contains the Logisim Evolution implementation of a Simple-As-Possible (SAP-1) CPU. The SAP-1 is a foundational computer architecture used to teach the basic principles of CPU design.
 
-*Main Components:*
-- Input Unit  
-- Registers (A, B, Instruction Register, Program Counter)  
-- Arithmetic Logic Unit (ALU)  
-- Control Unit  
-- Memory Unit  
-- Output Register  
-- Clock Generator
+This enhanced implementation features a fully functional hardwired control unit, which automates the fetch-decode-execute cycle. A key improvement is the addition of a ROM-based bootloader. This new feature allows machine code programs to be loaded into the CPU's RAM automatically, eliminating the tedious and error-prone process of manual data entry. The project culminates in successfully executing a simple addition program, loading two pre-defined 8-bit values, adding them, and storing the sum in memory.
 
 ---
 
-## ⚙ Functional Components
+<a id="features"></a>
+## Features
 
-### 🧾 Registers
-Registers are temporary storage elements that hold intermediate data.  
-SAP-1 uses the following registers:
+- **Load Data from Memory:** Supports `LDA` and `LDB` instructions to load values into registers.  
+- **Arithmetic Operations:** Performs addition (`ADD`) and subtraction (`SUB`) between registers.  
+- **Store Results:** Stores the contents of Register A into memory using the `STA` instruction.  
+- **Control Flow:** Jumps to a specific memory address with the `JMP` instruction for loops and branching.  
+- **Program Execution:** Executes instructions sequentially using the Program Counter.  
+- **Instruction Handling:** Fetches, decodes, and executes instructions automatically via the Instruction Register and Control Logic.  
+- **Halt Execution:** Stops program execution with the `HLT` instruction.  
+- **Debugging Support:** Allows step-by-step manual control through dedicated pins in Logisim.  
+- **Memory Access:** Handles up to 16 memory addresses (4-bit address space).  
+- **Data Processing:** Processes 8-bit data values for arithmetic and storage operations.  
+- **ROM Program Storage:** Stores the instruction code in ROM for persistent programs.  
+- **Bootloader / Instruction Loader:** In debug mode, data can be loaded from ROM into RAM through a bootloader mechanism, enabling easy program initialization and testing.  
 
-| Register | Function |
-|-----------|-----------|
-| *A-Register* | Accumulator – stores results from ALU |
-| *B-Register* | Second operand for arithmetic operations |
-| *Instruction Register (IR)* | Holds current instruction opcode |
-| *Output Register* | Displays final output |
-| *Program Counter (PC)* | Keeps track of next instruction address |
-
-<p align="center">
-  <img src="docs/screenshots/registers.png" width="500">
-</p>
-
----
-
-### 🧮 Program Counter
-The *Program Counter (PC)* is a 4-bit binary counter that holds the address of the next instruction to be executed.  
-It increments automatically with each clock cycle unless modified by a jump instruction.
-
-<p align="center">
-  <img src="docs/screenshots/program_counter.png" width="500">
-</p>
 
 ---
 
-### 💾 Memory Unit
-The *Memory Unit* (typically 16×8 ROM/RAM) stores program instructions and data.  
-Addresses are provided by the PC or the instruction operand, and contents are placed on the bus for execution.
+<a id="video-tutorials"></a>
+## Video Tutorials
 
-<p align="center">
-  <img src="docs/screenshots/memory_unit.png" width="500">
-</p>
+I made videos explaining the SAP-1 CPU and how to simulate it.
 
----
-
-### 🧩 Instruction Register
-The *Instruction Register (IR)* is divided into two 4-bit sections:
-- *Opcode field (IR[7:4])*
-- *Address field (IR[3:0])*
-
-It holds the current instruction fetched from memory and decodes it to determine the operation type.
-
-<p align="center">
-  <img src="docs/screenshots/instruction_register.png" width="500">
-</p>
+- Auto Code Loading (`khalid_sap1_auto.circ`): https://youtu.be/vwInhCTQctg  
+- Manual Code Loading (`khalid_sap1_manual.circ`): https://youtu.be/PrJcHA_dC8Q
 
 ---
 
-### ⚡ Arithmetic Logic Unit (ALU)
-The ALU performs *ADD* and *SUB* operations based on control signals.  
-It receives inputs from registers A and B and outputs results to the accumulator (A-Register).
+<a id="final-circuits"></a>
+## Final Circuits
 
-<p align="center">
-  <img src="docs/screenshots/alu_design.png" width="500">
-</p>
+- **Auto Code Loading (`khalid_sap1_auto.circ`)**
+  
+  ![Main Control Unit](khalid_sap1_img/khalid_sap1_auto.png)
 
----
-
-### 🖥 Output Register
-The Output Register holds the final computation result and displays it (e.g., via LED or 7-segment display).
-
-<p align="center">
-  <img src="docs/screenshots/output_register.png" width="500">
-</p>
+- **Manual Code Loading (`khalid_sap1_manual.circ`)**
+   
+  ![Main Control Unit](khalid_sap1_img/khalid_sap1_main.png)
 
 ---
 
-### 🧠 Control Unit
-The *Control Unit* (Sequencer) generates the timing and control signals required for each step of the instruction cycle.  
-It controls data movement through the bus and enables specific registers during each T-state.
+<a id="architecture-components"></a>
+## Architecture Components
 
-<p align="center">
-  <img src="docs/screenshots/control_unit.png" width="600">
-</p>
+The SAP-1 CPU is composed of several fundamental building blocks:
+
+- **Program Counter (PC):** A 4-bit counter that stores the memory address of the next instruction to be executed. It increments automatically after each instruction fetch.
+  
+  ![Program Counter](khalid_sap1_img/khalid_sap1_pc.png)
+
+- **Random Access Memory (RAM):** An 8-bit wide memory unit used to store both machine code instructions and data. This implementation uses a 16-byte RAM.
+   
+  ![RAM](khalid_sap1_img/khalid_sap1_sram.png)
+
+- **Memory Address Register (MAR):** A 4-bit register that holds the address of the memory location currently being accessed (for reading or writing).
+
+- **Instruction Register (IR):** An 8-bit register that temporarily holds the instruction fetched from RAM. It's split into a 4-bit opcode and a 4-bit operand (memory address).
+    
+  ![IR](khalid_sap1_img/khalid_sap1_ins_reg.png)
+
+- **Registers A & B (Accumulator & B-Register):** 8-bit general-purpose registers. Register A (Accumulator) is typically used for arithmetic operations and storing results. Register B holds the second operand for ALU operations.
+  
+  ![Registers A & B](khalid_sap1_img/khalid_sap1_reg_gp.png)
+
+- **Arithmetic Logic Unit (ALU):** An 8-bit unit capable of performing basic arithmetic (addition, subtraction) and logical operations on data from Registers A and B.
+  
+  ![ALU](khalid_sap1_img/khalid_sap1_alu.png)
+
+- **Instruction Loader:** Loads code instructions from ROM to RAM with clock pulses.
+  
+  ![Instruction Loader](khalid_sap1_img/khalid_sap1_ins_loader1.png)
+
+- **Output Register:** (Implicit in SAP-1, often just Register A or a direct output).
+
+- **Control Unit:** The "brain" of the CPU. It generates the necessary control signals (pin activations) at the correct time to sequence the micro-operations for fetching, decoding, and executing instructions.
+
+  - **Control Unit — Auto Mode (overview)**
+    
+    ![Main Control Unit](khalid_sap1_img/khalid_sap1_csn_auto.png)
+  
+  - **Control Unit — Auto Mode (detail)**
+    
+    ![Main Control Unit](khalid_sap1_img/khalid_sap1_cs.png)
 
 ---
 
-## 🔄 System Bus and Data Flow
-The SAP-1 uses a *single 8-bit bidirectional bus* for all data transfers.  
-All components connect to this common bus and are enabled/disabled by the control unit to avoid conflicts.
+<a id="control-unit"></a>
+## Control Unit (Hardwired)
 
-<p align="center">
-  <img src="docs/screenshots/system_bus.png" width="600">
-</p>
+The control unit is implemented using combinational logic (AND, OR, NOT gates) and a state counter (often called a ring counter in SAP-1 context). It orchestrates the entire CPU operation.
+
+<a id="subcomponents"></a>
+### Subcomponents
+
+- **State Counter (RC):** A 3-bit counter that cycles through T-states (T1, T2, T3, T4, T5, T6).
+  
+  ![State Counter](khalid_sap1_img/khalid_sap1_rc.png)
+
+- **Opcode Decoder:** A 4-to-16 decoder connected to the most significant 4 bits (opcode) of the Instruction Register. It generates a unique HIGH signal for each recognized instruction (e.g., `isLDA`, `isADD`, `isHLT`).
+  
+  ![Instruction Decoder](khalid_sap1_img/khalid_sap1_ins_dec.png)
+
+- **Control Matrix (Logic Gates):** The network of AND and OR gates that takes the T-state signals from the State Counter and the instruction signals from the Opcode Decoder as inputs. Its outputs are the various control pins that govern data flow and operations across the CPU.
+
+<a id="control-auto"></a>
+### Control Signals — Auto Mode (`khalid_sap1_auto.circ`)
+
+The following Boolean equations define when each control pin is activated (goes HIGH). These are implemented directly using AND and OR gates in the Control Matrix. `cpu_mode` is `NOT(debug)`, ensuring automated operation only when `debug` is OFF.
+
+- `pc_out_final = T1 AND cpu_mode AND (NOT l2)`
+- `mar_in_en_final = (T1 AND cpu_mode) OR ((T4 AND isLDA) AND cpu_mode) OR ((T4 AND isLDB) AND cpu_mode) OR ((T4 AND isSTA) AND cpu_mode) OR (l2 AND debug)`
+- `sram_rd_final = (T2 AND cpu_mode) OR ((T5 AND isLDA) AND cpu_mode) OR ((T5 AND isLDB) AND cpu_mode AND (NOT l2))`
+- `ins_reg_in_en_final = T2 AND cpu_mode AND (NOT l2)`
+- `pc_en_final = T3 AND cpu_mode AND (NOT l2)`
+- `ins_reg_out_en_final = ((T4 AND isLDA) AND cpu_mode) OR ((T4 AND isLDB) AND cpu_mode) OR ((T4 AND isSTA) AND cpu_mode) OR (T3 AND isJMP)`
+- `a_in_final = ((T5 AND isLDA) AND cpu_mode) OR ((T4 AND isADD) AND cpu_mode AND (NOT l2))`
+- `a_out_final = ((T4 AND isADD) AND cpu_mode) OR ((T5 AND isSTA) AND cpu_mode AND (NOT l2))`
+- `b_in_final = (T5 AND isLDB) AND cpu_mode AND (NOT l2)`
+- `b_out_final = (T4 AND isADD) AND cpu_mode AND (NOT l2)`
+- `alu_out_final = (T4 AND isADD) AND cpu_mode AND (NOT l2)`
+- `sram_wr_final = ((T5 AND isSTA) AND (NOT l2)) OR (l2 AND debug)`
+- `alu_sub = (T4 AND isSUB) AND cpu_mode AND (NOT l2)`
+- `hlt = T4 AND isHLT AND (NOT l2)` *(Used to stop the clock/reset the state counter)*
+- `jmp_en = (T3 AND isJMP) AND cpu_mode AND (NOT l2)`
+
+<a id="control-manual"></a>
+### Control Signals — Manual Mode (`khalid_sap1_manual.circ`)
+
+- `pc_out_final = T1 AND cpu_mode`
+- `mar_in_en_final = (T1 AND cpu_mode) OR ((T4 AND isLDA) AND cpu_mode) OR ((T4 AND isLDB) AND cpu_mode) OR ((T4 AND isSTA) AND cpu_mode) OR (mar_in_en_manual AND debug)`
+- `sram_rd_final = (T2 AND cpu_mode) OR ((T5 AND isLDA) AND cpu_mode) OR ((T5 AND isLDB) AND cpu_mode)`
+- `ins_reg_in_en_final = T2 AND cpu_mode`
+- `pc_en_final = T3 AND cpu_mode`
+- `ins_reg_out_en_final = ((T4 AND isLDA) AND cpu_mode) OR ((T4 AND isLDB) AND cpu_mode) OR ((T4 AND isSTA) AND cpu_mode)`
+- `a_in_final = ((T5 AND isLDA) AND cpu_mode) OR ((T4 AND isADD) AND cpu_mode)`
+- `a_out_final = ((T4 AND isADD) AND cpu_mode) OR ((T5 AND isSTA) AND cpu_mode)`
+- `b_in_final = (T5 AND isLDB) AND cpu_mode`
+- `b_out_final = (T4 AND isADD) AND cpu_mode`
+- `alu_out_final = (T4 AND isADD) AND cpu_mode`
+- `alu_sub = 0` *(Always LOW for addition)*
+- `cs_en = 1` *(Always HIGH)*
+- `sram_wr_final = ((T5 AND isSTA) AND cpu_mode) OR (sram_wr_manual AND debug)`
+- `hlt = T4 AND isHLT` *(Used to stop the clock/reset the state counter)*
+
+**Note on Debug Mode:** When the `debug` pin is HIGH, `cpu_mode` becomes LOW, disabling all `_auto` signals. The `mar_in_en_final` and `sram_wr_final` pins are then controlled by their respective `_manual` inputs, allowing direct RAM programming. All other bus outputs (from SRAM, Reg A, Reg B, ALU) are also disabled when `debug` is HIGH to prevent bus conflicts.
 
 ---
 
-## ⏱ Timing and Control Sequencing
-Instruction execution occurs through a sequence of timing states *(T1–T6)* controlled by the *clock* and *control unit*.  
-Each instruction (like LDA, ADD, JMP) has its own micro-operations mapped to these time states.
+<a id="example-program"></a>
+## Machine Code Program: Addition
 
-| Timing Step | Operation |
-|--------------|------------|
-| T1 | PC → MAR, PC increment |
-| T2 | Memory → IR |
-| T3 | Decode instruction |
-| T4 | Operand fetch or execution |
-| T5–T6 | Result store or halt |
+This program loads two 8-bit values (let's say 51 and 25), adds them, and stores the sum (76) in memory.
 
-<p align="center">
-  <img src="docs/screenshots/timing_waveform.png" width="700">
-</p>
+### Memory Addresses
+- Value 1 (Dec 51 & Hex `33`) at: `00001101` (Decimal 13)  
+- Value 2 (Dec 25 & Hex `19`) at: `00001110` (Decimal 14)  
+- Sum (Dec 76 & Hex `4C`) stored at: `00001111` (Decimal 15)
+
+### Instruction Set & Program
+| Address (Binary) | Instruction (Binary) | Hex | Mnemonic & Explanation |
+|------------------|----------------------|-----|-------------------------|
+| `00000000` | `0001 1101` | `1D` | `LDA 13` (Load Register A with value from memory address 13) |
+| `00000001` | `0010 1110` | `2E` | `LDB 14` (Load Register B with value from memory address 14) |
+| `00000010` | `0011 0000` | `30` | `ADD` (Add B to A, store in A. Operand bits are unused) |
+| `00000010` | `0100 0000` | `40` | `SUB` (Sub A to B, store in A. Operand bits are unused) |
+| `00000011` | `0101 1111` | `5F` | `STA 15` (Store content of Register A to memory address 15) |
+| `00000100` | `0110 0101` | `65` | `JMP 5` (Jump to memory address 5) |
+| `00000101` | `1111 0000` | `F0` | `HLT` (Halt program execution. Operand bits are unused) |
+
+### Data Values in RAM
+| Address (Binary) | Data (Binary) | Decimal | Hex |
+|------------------|---------------|---------|-----|
+| `00001101` | `00110011` | 51 | `33` |
+| `00001110` | `00011001` | 25 | `19` |
 
 ---
 
-## 🧰 Assembler Application
-To simplify program loading, a custom *Assembler App* is built using React + Tailwind + Vite.  
-It converts assembly mnemonics into space-delimited hexadecimal code compatible with Logisim ROM.
+<a id="compiler"></a>
+## Assembler or Compiler
 
-Supported Instructions:
+Go to the link and write your SAP-1 assembly code and The assembler will convert it into a hex string for your Logisim ROM.
 
-| Mnemonic | Opcode | Type |
-|-----------|--------|------|
-| LDA n | 0x1n | Addressed |
-| LDB n | 0x2n | Addressed |
-| ADD | 0x30 | Implied |
-| SUB | 0x40 | Implied |
-| STA n | 0x5n | Addressed |
-| JMP n | 0x6n | Addressed |
-| HLT | 0xF0 | Implied |
+**Compiler Link:** [sap1-compiler.vercel.app](https://sap1-compiler.vercel.app)
 
-<p align="center">
-  <img src="docs/screenshots/assembler_ui.png" width="700">
-</p>
+**Example:**
 
-➡ Folder: /assembler-app/  
-Run locally:
-```bash
-cd assembler-app
-npm install
-npm run dev
+Assembly Code For ADD: **`(LDA 13 LDA 14 ADD STA 15 HLT ORG 13 DEC 51 DEC 25)`** 
+
+Hex Code: **`1D 2E 30 5F F0 00 00 00 00 00 00 00 00 33 19 00`** 
+
+Assembly Code For JMP & ADD: **`(LDA 13 LDA 14 JMP 5 ORG 5 ADD STA 15 HLT ORG 13 DEC 51 DEC 25)`**
+
+Hex Code: **`1D 2E 65 00 00 30 5F F0 00 00 00 00 00 33 19 00`** 
+
+![Compiler](khalid_sap1_img/compiler.png)
+
+---
+
+<a id="fde"></a>
+## How It Works: Fetch–Decode–Execute Cycle
+
+The CPU operates in a continuous cycle, driven by the clock:
+
+### Fetch
+- **T1:** The Program Counter (PC) places its address onto the address bus. This address is loaded into the Memory Address Register (MAR).
+- **T2:** The RAM reads the instruction at the address in MAR and places it onto the data bus. The Instruction Register (IR) loads this instruction.
+- **T3:** The PC increments, preparing for the next instruction.
+
+### Decode
+The Instruction Register's opcode portion is sent to the Opcode Decoder, which activates a specific instruction line (e.g., `isLDA`). This decoded instruction, along with the current T-state from the State Counter, determines which control signals will be activated in the Execute phase.
+
+### Execute
+The control unit activates the necessary control pins to perform the micro-operations defined by the instruction. The number of T-states in this phase varies per instruction (e.g., `LDA` takes 2 T-states, `ADD` takes 2 T-states, `HLT` takes 1 T-state).
+
+This cycle repeats automatically for each instruction until a `HLT` instruction is encountered, which stops the clock.
+
+---
+
+<a id="run-auto"></a>
+## Run the CPU — Auto Mode (`khalid_sap1_auto.circ`)
+
+Follow these steps to load your ROM-based program and run the automated simulation:
+
+**Download and Open Logisim Evolution:** If you don't have it, download [Logisim Evolution](https://github.com/logisim-evolution/logisim-evolution).
+
+### 1) Initial Setup
+1. Open the `khalid_sap1_auto.circ` file containing your SAP-1 CPU design in Logisim.  
+2. Ensure the `debug` pin is **OFF (LOW)**.  
+3. Ensure the main `clk` (clock) component is **OFF**.  
+4. Pulse the `pc_reset` pin once to reset the Program Counter to `0000`.
+
+### 2) Program the ROM
+1. Right-click the ROM component and select **`Edit Contents...`**.  
+2. Enter the hex values for the program directly into the ROM's memory, as shown in the "Example Program" section.  
+3. Type the code: **`1D 2E 30 5F F0 00 00 00 00 00 00 00 00 33 19 00`** (For ADD) or **`1D 2E 40 5F F0 00 00 00 00 00 00 00 00 33 19 00`** (For SUB)
+4. Or, you can upload the code to the ROM by loading the provided `instruction_code_add` or `instruction_code_sub` file.
+
+### 3) Load Program to RAM (Bootloader Mode)
+1. Turn **ON** the `debug` pin (HIGH). The Code Loading Mode LED will turn ON.  
+2. With subsequent `clk` pulses, the CPU will automatically load the instructions from the ROM into the SRAM. It takes **two clock pulses per instruction/data value** to complete the write cycle.  
+3. Allow the CPU to cycle through all necessary addresses and load all instructions and data.  
+4. You can see the MAR address and the Data Bus in the 7-segment displays.
+
+### 4) Stop the Bootloader
+1. Turn **OFF** the `debug` pin (LOW).  
+2. Pulse the main `clk` button once to ensure the bootloader process completely stops.
+
+### 5) Run the Program
+1. Pulse the `pc_reset` pin again to ensure the Program Counter is at `0000` for program start.  
+2. Repeatedly click the `clk` button (or enable a continuous clock source) to watch the CPU execute the program automatically.  
+3. For each click, observe the changes in the PC, MAR, IR, Registers A and B in the 7-segment display.  
+4. Follow the Fetch–Decode–Execute cycle for each instruction as detailed above.  
+5. If you have a continuous clock source, enable it to watch the CPU run at speed.
+
+**You can follow the video below:**  
+
+![Final Result](khalid_sap1_img/khalid_sap1_vid.gif)
+
+### 6) Verify Result
+1. After the CPU executes the `HLT` instruction and stops, check the contents of RAM address `00001111` (decimal 15).  
+2. If you do ADD then It should contain `01001100` (decimal 76, Hex `4C`). Register A should also show `4C` on the 7-segment display.
+   
+   ![Verify Result](khalid_sap1_img/khalid_sap1_auto.png)
+
+---
+
+<a id="run-manual"></a>
+## Run the CPU — Manual Mode (`khalid_sap1_manual.circ`)
+
+Follow these steps to load your circuit, program the RAM, and run the automated simulation:
+
+1. **Download and Open Logisim Evolution:** If you don't have it, download [Logisim Evolution](https://github.com/logisim-evolution/logisim-evolution).  
+2. **Load the Circuit:** Open the `khalid_sap1_manual.circ` file containing your SAP-1 CPU design in Logisim.
+
+3. **Initial Setup:**  
+   - Ensure the **`debug`** pin is OFF (LOW). This enables the automated control.  
+   - Pulse the **`pc_reset`** pin once to reset the Program Counter to `0000`.  
+   - Ensure the main **`clk`** (clock) component is OFF. For step-by-step testing, you'll use a manual button for the clock.  
+   - Ensure the **`cs_en`** pin is ON (HIGH). This enables the circuit.
+
+4. **Program the RAM (Debug Mode):**  
+   - Turn **ON** the **`debug`** pin (HIGH). This enables manual control for RAM programming and disables automatic bus drivers.  
+   - For each instruction and data value (see **Example Program** above):  
+     - **Set Address:** Use `debug_data` to set the 8-bit memory address (e.g., `00000000` for the first instruction).  
+     - **Load Address to MAR:** Pulse `mar_in_en_manual` once.  
+     - **Set Data/Instruction:** Use `debug_data` to set the 8-bit instruction or data value (e.g., `00011101` for `LDA 13`).  
+     - **Write to RAM:** Pulse `sram_wr_manual` once.  
+
+   ![RAM Programming](khalid_sap1_img/khalid_sap1_raml.png)
+
+   - After loading all instructions and data, turn **OFF** the `debug` pin (LOW).  
+   - Pulse `pc_reset` again to ensure the PC is at `0000` for program start.
+
+5. **Run the Program:**  
+   - Use the main **`clk`** button (or enable the continuous clock):  
+     - **Manual Stepping (recommended):** Repeatedly click the `clk` button and observe PC, MAR, IR, Registers A/B, and RAM contents following the Fetch–Decode–Execute cycle.  
+     - **Continuous Run:** If you have a continuous clock source, enable it to watch the CPU run at speed.
+
+6. **Observe `HLT`:** When the CPU reaches `HLT`, the clock should stop, or the state counter should halt, indicating the program has finished.
+
+7. **Verify Result:** Check RAM address `00001111` (decimal 15). It should contain `01001100` (decimal 76).
+   
+   ![Final Result](khalid_sap1_img/khalid_sap1_result.png)
+
+---
+
+<a id="roadmap"></a>
+## Future Improvements
+
+- **Expand Instruction Set:** Add more instructions like `SUB`, `OUT`, `JMP`, `JZ`, etc.  
+- **Microprogrammed Control:** Replace the hardwired control unit with a microprogrammed one using a ROM for greater flexibility.  
+- **Input/Output:** Implement a simple input device (e.g., keyboard) and output display.
