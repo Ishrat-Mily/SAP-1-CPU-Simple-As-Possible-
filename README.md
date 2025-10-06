@@ -69,7 +69,7 @@ Test programs verified correct instruction execution and memory operations, maki
 ### System Architecture Overview
 The processor architecture uses a **unified single-bus design** with an **8-bit datapath** controlled by tri-state sources. Bus arbitration ensures that only **one driver** is active during each T-state, with possible drivers including `pc_out`, `sram_rd`, `ins_reg_out_en`, `a_out`, `b_out`, `alu_out`, and `sh_out`. Bus listener components such as `mar_in_en`, `ins_reg_in_en`, `a_in`, `b_in`, and `sram_wr` allow selective data capture when required.
 
-![Automatic Mode Control Sequencer](images/automatic_ckt.png)
+![Automatic Mode Control Sequencer](automatic_ckt.png)
 **Figure 1:** Automatic mode operation of the control sequencer showing fetch–decode–execute sequencing.  
 
 ![Manual/Loader Mode Control Sequencer](images/manual_ckt.png)
