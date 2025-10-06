@@ -83,7 +83,7 @@ The **A and B registers** use `reg_gp` modules to store **8-bit data**. They hav
 2. **Output:** Drives the bus via tri-state logic using `a_out` and `b_out`.  
 3. **Internal:** Provides direct access to the **ALU** through `reg_int_out` without using the bus.
 
-![A/B Register Subsystem](2_ins_reg_.png)
+![A/B Register Subsystem](2_ins_reg.png)
 **Figure 3:** A/B register subsystem with input, output, and internal interfaces.  
 
 ### Program Counter (PC) Implementation
