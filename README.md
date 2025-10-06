@@ -1,7 +1,7 @@
 # SAP-1-Architecture-Logisim
 ## Table of Contents
 Click on the Table of Contents below to directly go to the sections:
-- [Video Tutorial](#Video-Tutorial)
+
 - [Project Overview](#project-overview)
 - [Objectives](#objectives)
 - [Key Features](#key-features)
@@ -31,13 +31,6 @@ Click on the Table of Contents below to directly go to the sections:
 
 - [Future Improvement](#future-improvement)
 - [Conclusion](#conclusion)
-
-##  Video Tutorial
-Watch the complete demonstration of the **SAP-1 CPU with Control Sequencer (Manual and Automatic Modes)** implemented in **Logisim Evolution**.  
-Click the image below to watch the video on YouTube:
-
-[![SAP-1 CPU Tutorial](https://img.youtube.com/vi/_WnzsczYcdg/0.jpg)](https://youtu.be/_WnzsczYcdg)
-
 
 
 ## Project Overview
@@ -292,7 +285,7 @@ The instruction encoding system utilizes *upper nibble = IR[7:4]* for opcode spe
 
 | Address (Binary) | Data (Binary) | Decimal | Hex |
 |------------------|---------------|---------|-----|
-| 0001101          | 00010100      | 20      | 14  |
+| 0001101          | 0001101       | 13      | 0D  |
 | 0001110          | 00011001      | 25      | 19  |
 
 ---
@@ -321,8 +314,8 @@ Figure 16: Web-based SAP-1 assembler interface converting assembly instructions 
 
 | Example             | Assembly Code                                                                                   | Hex Code                                      |
 |---------------------|------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| *ADD Program*       | LDA 13, LDB 14, ADD, STA 15, HLT <br> (ORG 13, DEC 20, ORG 14, DEC 25)                         | 1D 2E 30 5F F0 00 00 00 00 00 00 14 19 00 00  |
-| *JMP + ADD Program* | LDA 13, LDB 14, JMP 5, ADD, STA 15, HLT <br> (ORG 13, DEC 20, ORG 14, DEC 25)                  | 1D 2E 65 30 5F F0 00 00 00 00 00 00 14 19 00  |
+| *ADD Program*       | LDA 13, LDB 14, ADD, STA 15, HLT <br> (ORG 13, DEC 13, ORG 14, DEC 25)                         | 1D 2E 30 5F F0 00 00 00 00 00 00 14 19 00 00  |
+| *JMP + ADD Program* | LDA 13, LDB 14, JMP 5, ADD, STA 15, HLT <br> (ORG 13, DEC 13, ORG 14, DEC 25)                  | 1D 2E 65 30 5F F0 00 00 00 00 00 00 0d 19 00  |
 
 ---
 
@@ -390,7 +383,7 @@ Pulse pc_reset once.
 **Step 2 – Program the ROM**  
 Edit ROM contents in Logisim.  
 Enter hex sequence:  
-1D 2E 65 00 30 5F F0 00 00 00 00 00 14 19 00 00  
+1D 2E 65 00 30 5F F0 00 00 00 00 00 0d 19 00 00  
 
 **Step 3 – Load to RAM (Bootloader Mode)**  
 Set debug pin HIGH.  
@@ -407,37 +400,18 @@ Provide clock pulses for execution.
 Observe PC, MAR, IR, A, B registers.  
 
 **Step 6 – Execution Sequence**  
-LDA 13 → A = 20  
+LDA 13 → A = 13  
 LDB 14 → B = 25  
 JMP 5 → PC = 5  
-ADD → A = A + B = 45  
-STA 15 → M[15] = 45  
+ADD → A = A + B = 38  
+STA 15 → M[15] = 38  
 HLT → Stop execution  
 
 **Step 7 – Verify Result**  
-RAM[15] = 45 (0x2D).  
+RAM[15] = 38 .  
 
 ---
 
-### SAP-1 CPU Execution (Automatic Mode)
-
-![After loading RAM](images/auto_op_1.png)  
-Figure 18: After loading all instruction and data values into RAM.
-
-![After LDA 13](images/auto_op_2.png)  
-Figure 19: Value 20 loaded from memory address 13 into Register A.
-
-![After LDB 14](images/auto_op_3.png)  
-Figure 20: Value 25 loaded from memory address 14 into Register B.
-
-![After JMP 5](images/auto_op_4.png)  
-Figure 21: PC updated to address 5, redirecting execution.
-
-![After ADD](images/auto_op_5.png)  
-Figure 22: A + B executed, result (45) stored in Register A.
-
-![After STA 15](images/auto_op_6.png)  
-Figure 23: Result (45) stored into memory address 15.
 
 
 
